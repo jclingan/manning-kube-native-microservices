@@ -3,11 +3,11 @@ package quarkus.accounts;
 import java.math.BigDecimal;
 
 public class Account {
-  Long accountNumber;
-  Long customerNumber;
-  String customerName;
-  BigDecimal balance;
-  AccountStatus accountStatus = AccountStatus.OPEN;
+  public Long accountNumber;
+  public Long customerNumber;
+  public String customerName;
+  public BigDecimal balance;
+  public AccountStatus accountStatus = AccountStatus.OPEN;
 
   public Account(Long accountNumber, Long customerNumber, String customerName, BigDecimal balance) {
     this.accountNumber = accountNumber;
