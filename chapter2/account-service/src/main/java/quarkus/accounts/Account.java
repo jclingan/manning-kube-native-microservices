@@ -9,6 +9,9 @@ public class Account {
   public BigDecimal balance;
   public AccountStatus accountStatus = AccountStatus.OPEN;
 
+  public Account() {
+  }
+
   public Account(Long accountNumber, Long customerNumber, String customerName, BigDecimal balance) {
     this.accountNumber = accountNumber;
     this.customerNumber = customerNumber;
