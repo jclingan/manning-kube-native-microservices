@@ -54,13 +54,13 @@ public class AccountResource {
   @POST
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public Account createAccount(Account account) {
+  public Response createAccount(Account account) {
     if (account.getAccountNumber() == null) {
       throw new WebApplicationException("No Account number specified.", 400);
     }
 
     accounts.add(account);
-    return account;
+    return Response.status(201).entity(account).build();
   }
 
   @PUT
