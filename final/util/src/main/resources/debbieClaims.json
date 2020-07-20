@@ -1,0 +1,11 @@
+{
+  "iss": "https://quarkus.io/using-jwt-rbac",
+  "jti": "d-123",
+  "sub": "customer",
+  "upn": "Debbie Hall",
+  "preferred_username": "debbie",
+  "aud": "quarkus-mp-jwt",
+  "groups": [
+    "customer"
+  ]
+}

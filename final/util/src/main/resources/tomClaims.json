@@ -1,0 +1,11 @@
+{
+  "iss": "https://quarkus.io/using-jwt-rbac",
+  "jti": "t-123",
+  "sub": "customer",
+  "upn": "Tom Baker",
+  "preferred_username": "tom",
+  "aud": "quarkus-mp-jwt",
+  "groups": [
+    "customer"
+  ]
+}

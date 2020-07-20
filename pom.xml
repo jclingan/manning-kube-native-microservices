@@ -8,5 +8,6 @@
 
   <modules>
     <module>chapter2</module>
+    <module>final</module>
   </modules>
 </project>
