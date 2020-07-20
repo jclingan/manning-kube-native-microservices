@@ -1,6 +1,8 @@
 package quarkus.accounts;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -56,6 +58,7 @@ public class AccountResource {
           }),
       @APIResponse(responseCode = "404", description = "Account not found")
   })
+  @SimplyTimed
   public Account getAccount(@PathParam("acctNumber") Long accountNumber) {
     Account account = Account.findByAccountNumber(accountNumber);
 
@@ -79,6 +82,7 @@ public class AccountResource {
       @APIResponse(responseCode = "400", description = "Id was set on the Account object"),
       @APIResponse(responseCode = "409", description = "Customer is not able to open more accounts")
   })
+  @SimplyTimed
   public Response createAccount(Account account) {
     if (account.id != null) {
       throw new WebApplicationException("Id was invalidly set on request.", 400);
@@ -97,6 +101,7 @@ public class AccountResource {
   @Path("{accountNumber}/withdraw")
   @RolesAllowed({"customer", "admin"})
   @Transactional
+  @Counted
   public Account withdrawal(@Context SecurityContext ctx, @PathParam("accountNumber") Long accountNumber, String amount) {
     Account entity = Account.findByAccountNumber(accountNumber);
 

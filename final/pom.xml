@@ -24,6 +24,7 @@
   <modules>
     <module>account-service</module>
     <module>banking-service</module>
+    <module>overdraft-service</module>
     <module>util</module>
   </modules>
 

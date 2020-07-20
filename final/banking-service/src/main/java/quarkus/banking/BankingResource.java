@@ -1,9 +1,12 @@
 package quarkus.banking;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.faulttolerance.*;
+import org.eclipse.microprofile.metrics.annotation.SimplyTimed;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import quarkus.banking.account.AccountService;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
@@ -15,6 +18,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import java.math.BigDecimal;
+import java.net.ConnectException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -42,6 +46,7 @@ public class BankingResource {
 
   @GET
   @Path("{id")
+  @SimplyTimed
   public TransactionRecord getTransaction(@PathParam("id") Long id) {
     TransactionRecord transactionRecord = transactionRecordRepository.findById(id);
 
@@ -53,6 +58,8 @@ public class BankingResource {
   }
 
   @POST
+  @RolesAllowed("customer")
+  @SimplyTimed
   @Transactional
   public Response createTransactionRecord(TransactionRecord transactionRecord) {
     if (transactionRecord.getId() != null) {
@@ -72,20 +79,35 @@ public class BankingResource {
     }
 
     // Call Account service to deposit/withdraw
-    Response externalResponse = null;
-    if (withdrawal) {
-      externalResponse = accountService.withdrawal(transactionRecord.getAccountNumber(), transactionRecord.getAmount().toString());
-    } else {
-      externalResponse = accountService.deposit(transactionRecord.getAccountNumber(), transactionRecord.getAmount().toString());
-    }
-
-    if (externalResponse.getStatus() != Response.Status.OK.getStatusCode()) {
-      LOGGER.fine(externalResponse.getStatusInfo().getReasonPhrase());
-      throw new WebApplicationException("Failed to update account balance, please try again later", 500);
-    }
+    callAccountService(transactionRecord.getAccountNumber(), transactionRecord.getAmount().toString(), withdrawal);
 
     transactionRecordRepository.persist(transactionRecord);
     return Response.status(201).entity(transactionRecord).build();
+  }
+
+  @CircuitBreaker(delay = 3000L, requestVolumeThreshold = 10)
+  @Retry(maxRetries = 2, delay = 100L, retryOn = ConnectException.class)
+  @Bulkhead(4)
+  @Timeout
+  @Fallback(fallbackMethod = "accountServiceFallback")
+  private Response callAccountService(Long accountNumber, String amount, boolean isWithdrawal) {
+    Response externalResponse = null;
+
+    if (isWithdrawal) {
+      externalResponse = accountService.withdrawal(accountNumber, amount);
+    } else {
+      externalResponse = accountService.deposit(accountNumber, amount);
+    }
+
+    return externalResponse;
+  }
+
+  private Response accountServiceFallback(Long accountNumber, String amount, boolean isWithdrawal) {
+    JsonObjectBuilder entityBuilder = Json.createObjectBuilder()
+        .add("message", "Unable to update the Account balance at this time, please try again later.")
+        .add("code", 500);
+
+    return Response.status(500).entity(entityBuilder.build()).build();
   }
 
   @Provider
