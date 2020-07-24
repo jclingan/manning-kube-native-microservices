@@ -1,15 +1,12 @@
 package quarkus.accounts.activerecord;
 
-import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import java.math.BigDecimal;
@@ -39,17 +36,11 @@ public class AccountResource {
   }
 
   @POST
-  @RolesAllowed({"admin"})
   @Transactional
   public Response createAccount(Account account) {
     if (account.id != null) {
       throw new WebApplicationException("Id was invalidly set on request.", 400);
     }
-
-    // Ensure customer has not gone over max account limit
-//    if (Account.totalAccountsForCustomer(account.customerNumber) >= customerAccountMaximum) {
-//      throw new WebApplicationException("Customer already has maximum number of accounts: " + customerAccountMaximum, 409);
-//    }
 
     account.persist();
     return Response.status(201).entity(account).build();
@@ -58,17 +49,11 @@ public class AccountResource {
   @PUT
   @Path("{accountNumber}/withdraw")
   @Transactional
-  public Account withdrawal(@Context SecurityContext ctx, @PathParam("accountNumber") Long accountNumber, String amount) {
+  public Account withdrawal(@PathParam("accountNumber") Long accountNumber, String amount) {
     Account entity = Account.findByAccountNumber(accountNumber);
 
     if (entity == null) {
       throw new WebApplicationException("Account with " + accountNumber + " does not exist.", 404);
-    }
-
-    if (ctx.isUserInRole("customer")) {
-      if (!entity.customerName.equals(ctx.getUserPrincipal().getName())) {
-        throw new WebApplicationException(ctx.getUserPrincipal().getName() + " is not authorized to withdraw from Account " + accountNumber, 403);
-      }
     }
 
     if (entity.accountStatus.equals(AccountStatus.OVERDRAWN)) {
@@ -76,11 +61,6 @@ public class AccountResource {
     }
 
     entity.withdrawFunds(new BigDecimal(amount));
-
-//    if (entity.balance.compareTo(accountOverdraftLimit) <= 0) {
-//      entity.markOverdrawn();
-//      accountEmitter.send(entity);
-//    }
 
     return entity;
   }

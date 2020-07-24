@@ -1,16 +1,13 @@
 package quarkus.accounts.repository;
 
-import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import java.math.BigDecimal;
@@ -43,17 +40,11 @@ public class AccountResource {
   }
 
   @POST
-  @RolesAllowed({"admin"})
   @Transactional
   public Response createAccount(Account account) {
     if (account.getId() != null) {
       throw new WebApplicationException("Id was invalidly set on request.", 400);
     }
-
-    // Ensure customer has not gone over max account limit
-//    if (Account.totalAccountsForCustomer(account.customerNumber) >= customerAccountMaximum) {
-//      throw new WebApplicationException("Customer already has maximum number of accounts: " + customerAccountMaximum, 409);
-//    }
 
     accountRepository.persist(account);
     return Response.status(201).entity(account).build();
@@ -62,7 +53,7 @@ public class AccountResource {
   @PUT
   @Path("{accountNumber}/withdraw")
   @Transactional
-  public Account withdrawal(@Context SecurityContext ctx, @PathParam("accountNumber") Long accountNumber, String amount) {
+  public Account withdrawal(@PathParam("accountNumber") Long accountNumber, String amount) {
     Account entity = accountRepository.findByAccountNumber(accountNumber);
 
     if (entity == null) {
@@ -74,11 +65,6 @@ public class AccountResource {
     }
 
     entity.withdrawFunds(new BigDecimal(amount));
-
-//    if (entity.balance.compareTo(accountOverdraftLimit) <= 0) {
-//      entity.markOverdrawn();
-//      accountEmitter.send(entity);
-//    }
 
     return entity;
   }
