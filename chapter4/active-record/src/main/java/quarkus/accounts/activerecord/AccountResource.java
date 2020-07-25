@@ -47,7 +47,7 @@ public class AccountResource {
   }
 
   @PUT
-  @Path("{accountNumber}/withdraw")
+  @Path("{accountNumber}/withdrawal")
   @Transactional
   public Account withdrawal(@PathParam("accountNumber") Long accountNumber, String amount) {
     Account entity = Account.findByAccountNumber(accountNumber);

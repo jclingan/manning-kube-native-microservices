@@ -1,4 +1,4 @@
-package quarkus.accounts.activerecord;
+package quarkus.accounts.jpa;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
@@ -15,6 +15,8 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import quarkus.accounts.jpa.Account;
+import quarkus.accounts.jpa.AccountStatus;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -55,21 +57,21 @@ public class AccountResourceTest {
               .extract()
               .as(Account.class);
 
-    assertThat(account.accountNumber, equalTo(444666L));
-    assertThat(account.customerName, equalTo("Billie Piper"));
-    assertThat(account.customerNumber, equalTo(332233L));
-    assertThat(account.balance, equalTo(new BigDecimal("3499.12")));
-    assertThat(account.accountStatus, equalTo(AccountStatus.OPEN));
+    assertThat(account.getAccountNumber(), equalTo(444666L));
+    assertThat(account.getCustomerName(), equalTo("Billie Piper"));
+    assertThat(account.getCustomerNumber(), equalTo(332233L));
+    assertThat(account.getBalance(), equalTo(new BigDecimal("3499.12")));
+    assertThat(account.getAccountStatus(), equalTo(AccountStatus.OPEN));
   }
 
   @Test
   @Order(3)
-  void testCreateAccount() throws Exception {
+  void testCreateAccount() {
     Account newAccount = new Account();
-    newAccount.accountNumber = 324324L;
-    newAccount.customerNumber = 112244L;
-    newAccount.customerName = "Sandy Holmes";
-    newAccount.balance = new BigDecimal("154.55");
+    newAccount.setAccountNumber(324324L);
+    newAccount.setCustomerNumber(112244L);
+    newAccount.setCustomerName("Sandy Holmes");
+    newAccount.setBalance(new BigDecimal("154.55"));
 
     Account returnedAccount =
         given()
@@ -119,11 +121,11 @@ public class AccountResourceTest {
             .extract()
             .as(Account.class);
 
-    assertThat(account.accountNumber, equalTo(5465L));
-    assertThat(account.customerName, equalTo("Alex Trebek"));
-    assertThat(account.customerNumber, equalTo(776868L));
-    assertThat(account.balance, equalTo(new BigDecimal("0.00")));
-    assertThat(account.accountStatus, equalTo(AccountStatus.CLOSED));
+    assertThat(account.getAccountNumber(), equalTo(5465L));
+    assertThat(account.getCustomerName(), equalTo("Alex Trebek"));
+    assertThat(account.getCustomerNumber(), equalTo(776868L));
+    assertThat(account.getBalance(), equalTo(new BigDecimal("0.00")));
+    assertThat(account.getAccountStatus(), equalTo(AccountStatus.CLOSED));
   }
 
   @Test
@@ -138,7 +140,7 @@ public class AccountResourceTest {
             .as(Account.class);
 
     BigDecimal deposit = new BigDecimal("154.98");
-    BigDecimal balance = account.balance.add(deposit);
+    BigDecimal balance = account.getBalance().add(deposit);
 
     account =
         given()
@@ -150,11 +152,11 @@ public class AccountResourceTest {
             .extract()
             .as(Account.class);
 
-    assertThat(account.accountNumber, equalTo(123456789L));
-    assertThat(account.customerName, equalTo("Debbie Hall"));
-    assertThat(account.customerNumber, equalTo(12345L));
-    assertThat(account.accountStatus, equalTo(AccountStatus.OPEN));
-    assertThat(account.balance, equalTo(balance));
+    assertThat(account.getAccountNumber(), equalTo(123456789L));
+    assertThat(account.getCustomerName(), equalTo("Debbie Hall"));
+    assertThat(account.getCustomerNumber(), equalTo(12345L));
+    assertThat(account.getAccountStatus(), equalTo(AccountStatus.OPEN));
+    assertThat(account.getBalance(), equalTo(balance));
   }
 
   @Test
@@ -169,7 +171,7 @@ public class AccountResourceTest {
             .as(Account.class);
 
     BigDecimal withdrawal = new BigDecimal("23.82");
-    BigDecimal balance = account.balance.subtract(withdrawal);
+    BigDecimal balance = account.getBalance().subtract(withdrawal);
 
     account =
         given()
@@ -181,10 +183,10 @@ public class AccountResourceTest {
             .extract()
             .as(Account.class);
 
-    assertThat(account.accountNumber, equalTo(78790L));
-    assertThat(account.customerName, equalTo("Vanna White"));
-    assertThat(account.customerNumber, equalTo(444222L));
-    assertThat(account.accountStatus, equalTo(AccountStatus.OPEN));
-    assertThat(account.balance, equalTo(balance));
+    assertThat(account.getAccountNumber(), equalTo(78790L));
+    assertThat(account.getCustomerName(), equalTo("Vanna White"));
+    assertThat(account.getCustomerNumber(), equalTo(444222L));
+    assertThat(account.getAccountStatus(), equalTo(AccountStatus.OPEN));
+    assertThat(account.getBalance(), equalTo(balance));
   }
 }
