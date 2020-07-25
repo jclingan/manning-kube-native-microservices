@@ -124,6 +124,20 @@ public class AccountResourceTest {
     assertThat(account.customerNumber, equalTo(776868L));
     assertThat(account.balance, equalTo(new BigDecimal("0.00")));
     assertThat(account.accountStatus, equalTo(AccountStatus.CLOSED));
+
+    account =
+        given()
+            .when().get("/accounts/{accountNumber}", 5465)
+            .then()
+            .statusCode(200)
+            .extract()
+            .as(Account.class);
+
+    assertThat(account.accountNumber, equalTo(5465L));
+    assertThat(account.customerName, equalTo("Alex Trebek"));
+    assertThat(account.customerNumber, equalTo(776868L));
+    assertThat(account.balance, equalTo(new BigDecimal("0.00")));
+    assertThat(account.accountStatus, equalTo(AccountStatus.CLOSED));
   }
 
   @Test
@@ -155,6 +169,20 @@ public class AccountResourceTest {
     assertThat(account.customerNumber, equalTo(12345L));
     assertThat(account.accountStatus, equalTo(AccountStatus.OPEN));
     assertThat(account.balance, equalTo(balance));
+
+    account =
+        given()
+            .when().get("/accounts/{accountNumber}", 123456789)
+            .then()
+            .statusCode(200)
+            .extract()
+            .as(Account.class);
+
+    assertThat(account.accountNumber, equalTo(123456789L));
+    assertThat(account.customerName, equalTo("Debbie Hall"));
+    assertThat(account.customerNumber, equalTo(12345L));
+    assertThat(account.accountStatus, equalTo(AccountStatus.OPEN));
+    assertThat(account.balance, equalTo(balance));
   }
 
   @Test
@@ -176,6 +204,20 @@ public class AccountResourceTest {
             .contentType(ContentType.JSON)
             .body(withdrawal.toString())
             .when().put("/accounts/{accountNumber}/withdrawal", 78790)
+            .then()
+            .statusCode(200)
+            .extract()
+            .as(Account.class);
+
+    assertThat(account.accountNumber, equalTo(78790L));
+    assertThat(account.customerName, equalTo("Vanna White"));
+    assertThat(account.customerNumber, equalTo(444222L));
+    assertThat(account.accountStatus, equalTo(AccountStatus.OPEN));
+    assertThat(account.balance, equalTo(balance));
+
+    account =
+        given()
+            .when().get("/accounts/{accountNumber}", 78790)
             .then()
             .statusCode(200)
             .extract()

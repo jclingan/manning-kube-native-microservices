@@ -114,6 +114,57 @@
               </execution>
             </executions>
           </plugin>
+          <plugin>
+            <!-- Automatically start PostgreSQL for integration testing - requires Docker -->
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <version>${docker-plugin.version}</version>
+            <configuration>
+              <skip>${skipTests}</skip>
+              <images>
+                <image>
+                  <name>postgres:10.5</name>
+                  <alias>postgresql</alias>
+                  <run>
+                    <env>
+                      <POSTGRES_USER>quarkus_banking</POSTGRES_USER>
+                      <POSTGRES_PASSWORD>quarkus_banking</POSTGRES_PASSWORD>
+                      <POSTGRES_DB>quarkus_banking</POSTGRES_DB>
+                    </env>
+                    <ports>
+                      <port>5432:5432</port>
+                    </ports>
+                    <log>
+                      <prefix>PostgreSQL: </prefix>
+                      <date>default</date>
+                      <color>cyan</color>
+                    </log>
+                    <wait>
+                      <log>^.*?\b(CREATE DATABASE)\b.*</log>
+                      <time>10000</time>
+                    </wait>
+                  </run>
+                </image>
+              </images>
+            </configuration>
+            <executions>
+              <execution>
+                <id>docker-start</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>docker-stop</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
       </build>
       <properties>
