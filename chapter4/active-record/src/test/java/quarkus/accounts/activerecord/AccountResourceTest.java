@@ -229,4 +229,29 @@ public class AccountResourceTest {
     assertThat(account.accountStatus, equalTo(AccountStatus.OPEN));
     assertThat(account.balance, equalTo(balance));
   }
+
+  @Test
+  void testGetAccountFailure() {
+     given()
+        .when().get("/accounts/{accountNumber}", 11)
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void testCreateAccountFailure() {
+    Account newAccount = new Account();
+    newAccount.id = 12L;
+    newAccount.accountNumber = 90909L;
+    newAccount.customerNumber = 888898L;
+    newAccount.customerName = "Barry Mines";
+    newAccount.balance = new BigDecimal("878.32");
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(newAccount)
+        .when().post("/accounts")
+        .then()
+        .statusCode(400);
+  }
 }

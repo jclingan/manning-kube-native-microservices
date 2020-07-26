@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -31,13 +32,11 @@ public class AccountResource {
   @GET
   @Path("/{acctNumber}")
   public Account getAccount(@PathParam("acctNumber") Long accountNumber) {
-    Account account = entityManager.createNamedQuery("Accounts.findByAccountNumber", Account.class).setParameter("accountNumber", accountNumber).getSingleResult();
-
-    if (account == null) {
+    try {
+      return entityManager.createNamedQuery("Accounts.findByAccountNumber", Account.class).setParameter("accountNumber", accountNumber).getSingleResult();
+    } catch (NoResultException nre) {
       throw new WebApplicationException("Account with " + accountNumber + " does not exist.", 404);
     }
-
-    return account;
   }
 
   @POST
@@ -55,9 +54,10 @@ public class AccountResource {
   @Path("{accountNumber}/withdrawal")
   @Transactional
   public Account withdrawal(@PathParam("accountNumber") Long accountNumber, String amount) {
-    Account entity = entityManager.createNamedQuery("Accounts.findByAccountNumber", Account.class).setParameter("accountNumber", accountNumber).getSingleResult();
-
-    if (entity == null) {
+    Account entity;
+    try {
+      entity = entityManager.createNamedQuery("Accounts.findByAccountNumber", Account.class).setParameter("accountNumber", accountNumber).getSingleResult();
+    } catch (NoResultException nre) {
       throw new WebApplicationException("Account with " + accountNumber + " does not exist.", 404);
     }
 
@@ -75,9 +75,10 @@ public class AccountResource {
   @Path("{accountNumber}/deposit")
   @Transactional
   public Account deposit(@PathParam("accountNumber") Long accountNumber, String amount) {
-    Account entity = entityManager.createNamedQuery("Accounts.findByAccountNumber", Account.class).setParameter("accountNumber", accountNumber).getSingleResult();
-
-    if (entity == null) {
+    Account entity;
+    try {
+      entity = entityManager.createNamedQuery("Accounts.findByAccountNumber", Account.class).setParameter("accountNumber", accountNumber).getSingleResult();
+    } catch (NoResultException nre) {
       throw new WebApplicationException("Account with " + accountNumber + " does not exist.", 404);
     }
 
@@ -89,9 +90,10 @@ public class AccountResource {
   @Path("{accountNumber}")
   @Transactional
   public Response closeAccount(@PathParam("accountNumber") Long accountNumber) {
-    Account account = entityManager.createNamedQuery("Accounts.findByAccountNumber", Account.class).setParameter("accountNumber", accountNumber).getSingleResult();
-
-    if (account == null) {
+    Account account;
+    try {
+      account = entityManager.createNamedQuery("Accounts.findByAccountNumber", Account.class).setParameter("accountNumber", accountNumber).getSingleResult();
+    } catch (NoResultException nre) {
       throw new WebApplicationException("Account with " + accountNumber + " does not exist.", 404);
     }
 

@@ -15,9 +15,6 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import quarkus.accounts.jpa.Account;
-import quarkus.accounts.jpa.AccountStatus;
-
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -230,5 +227,30 @@ public class AccountResourceTest {
     assertThat(account.getCustomerNumber(), equalTo(444222L));
     assertThat(account.getAccountStatus(), equalTo(AccountStatus.OPEN));
     assertThat(account.getBalance(), equalTo(balance));
+  }
+
+  @Test
+  void testGetAccountFailure() {
+    given()
+        .when().get("/accounts/{accountNumber}", 11)
+        .then()
+        .statusCode(404);
+  }
+
+  @Test
+  void testCreateAccountFailure() {
+    Account newAccount = new Account();
+    newAccount.setId(12L);
+    newAccount.setAccountNumber(90909L);
+    newAccount.setCustomerNumber(888898L);
+    newAccount.setCustomerName("Barry Mines");
+    newAccount.setBalance(new BigDecimal("878.32"));
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(newAccount)
+        .when().post("/accounts")
+        .then()
+        .statusCode(400);
   }
 }
