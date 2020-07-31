@@ -56,7 +56,7 @@ public class AccountResource {
   public Account withdrawal(@PathParam("accountNumber") Long accountNumber, String amount) {
     Account entity;
     try {
-      entity = entityManager.createNamedQuery("Accounts.findByAccountNumber", Account.class).setParameter("accountNumber", accountNumber).getSingleResult();
+      entity = getAccount(accountNumber);
     } catch (NoResultException nre) {
       throw new WebApplicationException("Account with " + accountNumber + " does not exist.", 404);
     }
@@ -77,7 +77,7 @@ public class AccountResource {
   public Account deposit(@PathParam("accountNumber") Long accountNumber, String amount) {
     Account entity;
     try {
-      entity = entityManager.createNamedQuery("Accounts.findByAccountNumber", Account.class).setParameter("accountNumber", accountNumber).getSingleResult();
+      entity = getAccount(accountNumber);
     } catch (NoResultException nre) {
       throw new WebApplicationException("Account with " + accountNumber + " does not exist.", 404);
     }
@@ -92,7 +92,7 @@ public class AccountResource {
   public Response closeAccount(@PathParam("accountNumber") Long accountNumber) {
     Account account;
     try {
-      account = entityManager.createNamedQuery("Accounts.findByAccountNumber", Account.class).setParameter("accountNumber", accountNumber).getSingleResult();
+      account = getAccount(accountNumber);
     } catch (NoResultException nre) {
       throw new WebApplicationException("Account with " + accountNumber + " does not exist.", 404);
     }
