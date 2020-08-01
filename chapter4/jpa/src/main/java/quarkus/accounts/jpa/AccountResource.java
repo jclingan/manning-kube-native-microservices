@@ -66,8 +66,6 @@ public class AccountResource {
     }
 
     entity.withdrawFunds(new BigDecimal(amount));
-
-    entityManager.merge(entity);
     return entity;
   }
 
@@ -98,7 +96,6 @@ public class AccountResource {
     }
 
     account.close();
-    entityManager.merge(account);
     return Response.noContent().build();
   }
 

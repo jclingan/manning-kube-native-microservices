@@ -124,20 +124,6 @@ public class AccountResourceTest {
     assertThat(account.customerNumber, equalTo(776868L));
     assertThat(account.balance, equalTo(new BigDecimal("0.00")));
     assertThat(account.accountStatus, equalTo(AccountStatus.CLOSED));
-
-    account =
-        given()
-            .when().get("/accounts/{accountNumber}", 5465)
-            .then()
-            .statusCode(200)
-            .extract()
-            .as(Account.class);
-
-    assertThat(account.accountNumber, equalTo(5465L));
-    assertThat(account.customerName, equalTo("Alex Trebek"));
-    assertThat(account.customerNumber, equalTo(776868L));
-    assertThat(account.balance, equalTo(new BigDecimal("0.00")));
-    assertThat(account.accountStatus, equalTo(AccountStatus.CLOSED));
   }
 
   @Test

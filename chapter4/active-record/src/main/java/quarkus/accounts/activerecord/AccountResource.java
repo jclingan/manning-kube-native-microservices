@@ -90,7 +90,6 @@ public class AccountResource {
     }
 
     account.close();
-    account.persist();
     return Response.noContent().build();
   }
 

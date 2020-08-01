@@ -94,7 +94,6 @@ public class AccountResource {
     }
 
     account.close();
-    accountRepository.persist(account);
     return Response.noContent().build();
   }
 
