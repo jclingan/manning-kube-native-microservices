@@ -82,6 +82,7 @@ public class AccountResourceTest {
             .as(Account.class);
 
     assertThat(returnedAccount, notNullValue());
+    newAccount.setId(returnedAccount.getId());
     assertThat(returnedAccount, equalTo(newAccount));
 
     Response result =

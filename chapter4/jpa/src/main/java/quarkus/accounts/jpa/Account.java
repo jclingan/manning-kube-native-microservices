@@ -93,13 +93,14 @@ public class Account {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Account account = (Account) o;
-    return accountNumber.equals(account.accountNumber) &&
+    return id.equals(account.id) &&
+        accountNumber.equals(account.accountNumber) &&
         customerNumber.equals(account.customerNumber);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(accountNumber, customerNumber);
+    return Objects.hash(id, accountNumber, customerNumber);
   }
 }
 
