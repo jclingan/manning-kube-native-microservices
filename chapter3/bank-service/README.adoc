@@ -1,0 +1,95 @@
+= bank-service project
+
+This example is intended to run in minikube. To Run, follow these steps:
+
+== Create Kubernetes ConfigMap and Kubernetes Secret
+
+=== Create configmap
+
+[source,shell script]
+.Create Kubernetes ConfigMap
+----
+kubectl create configmap banking \      <1>
+        --from-file=application.yaml    <2>
+----
+<1> Create a ConfigMap named _banking_
+<2> Populate the ConfigMap with the contents of the application.yaml file.
+
+=== Create secrets
+
+[source,shell script]
+.Create Kubernetes Secrets from  literals
+----
+kubectl create secret generic db-credentials \   <1>
+        --from-literal=username=admin \          <2>
+        --from-literal=password=secret           <3>
+----
+<1> Create a Kubernetes Secret named `db-credentials`
+<2> Store `password=secret` as a base64-encoded property
+<3> Store `username=admin` as a base64-encoded property
+
+== Deploy to Kubernetes
+
+[source,shell script]
+.Deploy bank-service to Kubernetes
+----
+mvn clean package -Dquarkus.kubernetes.deploy=true
+----
+
+== Test Endpoints
+
+=== Test bank name
+[source,shell script]
+.Get endpoint
+----
+export PORT=`kubectl get svc bank-service -o jsonpath="{.spec.ports[0].nodePort }"`
+export IP=`minikube ip`
+export BASE_URL=http://$IP:$PORT/bank
+----
+
+[source,shell script]
+.Test name
+----
+curl -i $BASE_URL/name
+----
+
+.Output
+----
+HTTP/1.1 200 OK
+Content-Length: 17
+Content-Type: text/plain;charset=UTF-8
+
+Bank of ConfigMap
+----
+
+=== Test bank support
+
+[source,shell script]
+.Test support
+----
+curl -i $BASE_URL/support
+----
+
+.Output
+----
+HTTP/1.1 200 OK
+Content-Length: 60
+Content-Type: application/json
+
+{"phone":"555-555-5555","email":"support@bankofquarkus.com"}
+----
+
+=== Test Kubernetes Secret and property expansion
+.Test secret
+----
+curl -i $BASE_URL/secrets
+----
+
+.Output
+----
+HTTP/1.1 200 OK
+Content-Length: 85
+Content-Type: application/json
+
+{"password":"secret","db.password":"secret","db.username":"admin","username":"admin"}
+----
