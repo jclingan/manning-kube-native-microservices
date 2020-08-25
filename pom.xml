@@ -11,6 +11,7 @@
     <module>chapter2</module>
     <module>chapter3/bank-service</module>
     <module>chapter4</module>
+    <module>chapter5</module>
     <module>final</module>
   </modules>
 </project>

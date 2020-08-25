@@ -1,8 +1,8 @@
-package quarkus.accounts.activerecord;
+package quarkus.accounts;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
 
@@ -20,27 +20,6 @@ public class Account extends PanacheEntity {
 
   public static Account findByAccountNumber(Long accountNumber) {
     return find("accountNumber", accountNumber).firstResult();
-  }
-
-  public void markOverdrawn() {
-    accountStatus = AccountStatus.OVERDRAWN;
-  }
-
-  public void removeOverdrawnStatus() {
-    accountStatus = AccountStatus.OPEN;
-  }
-
-  public void close() {
-    accountStatus = AccountStatus.CLOSED;
-    balance = BigDecimal.valueOf(0);
-  }
-
-  public void withdrawFunds(BigDecimal amount) {
-    balance = balance.subtract(amount);
-  }
-
-  public void addFunds(BigDecimal amount) {
-    balance = balance.add(amount);
   }
 
   @Override
