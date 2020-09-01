@@ -6,11 +6,15 @@ import javax.json.JsonObjectBuilder;
 import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 @Path("/accounts")
 @ApplicationScoped
@@ -33,7 +37,7 @@ public class AccountResource {
   @POST
   @Path("{accountNumber}/transaction")
   @Transactional
-  public void transact(@PathParam("accountNumber") Long accountNumber, BigDecimal amount) {
+  public Map<String, List<String>> transact(@Context HttpHeaders headers, @PathParam("accountNumber") Long accountNumber, BigDecimal amount) {
     Account entity = Account.findByAccountNumber(accountNumber);
 
     if (entity == null) {
@@ -45,6 +49,7 @@ public class AccountResource {
     }
 
     entity.balance = entity.balance.add(amount);
+    return headers.getRequestHeaders();
   }
 
   @Provider

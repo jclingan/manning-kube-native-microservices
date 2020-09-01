@@ -12,6 +12,10 @@ import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
 @Path("/transactions")
@@ -28,14 +32,20 @@ public class TransactionResource {
 
   @POST
   @Path("/{acctNumber}")
-  public Response newTransaction(@PathParam("acctNumber") Long accountNumber, BigDecimal amount) {
-    accountService.transact(accountNumber, amount);
-    return Response.ok().build();
+  public Map<String, List<String>> newTransaction(@PathParam("acctNumber") Long accountNumber, BigDecimal amount) {
+    try {
+      return accountService.transact(accountNumber, amount);
+    } catch (Throwable t) {
+      t.printStackTrace();
+      Map<String, List<String>> response = new HashMap<>();
+      response.put("EXCEPTION - " + t.getClass(), Collections.singletonList(t.getMessage()));
+      return response;
+    }
   }
 
   @POST
   @Path("/async/{acctNumber}")
-  public CompletionStage<Void> newTransactionAsync(@PathParam("acctNumber") Long accountNumber, BigDecimal amount) {
+  public CompletionStage<Map<String, List<String>>> newTransactionAsync(@PathParam("acctNumber") Long accountNumber, BigDecimal amount) {
     return accountService.transactAsync(accountNumber, amount);
   }
 
