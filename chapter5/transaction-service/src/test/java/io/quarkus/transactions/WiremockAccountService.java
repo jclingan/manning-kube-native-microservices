@@ -23,8 +23,11 @@ public class WiremockAccountService implements QuarkusTestResourceLifecycleManag
         ));
 
     stubFor(post(urlEqualTo("/accounts/121212/transaction"))
-        .willReturn(noContent())
-    );
+        .willReturn(aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withStatus(200)
+            .withBody("{}")
+        ));
 
     return Collections.singletonMap("io.quarkus.transactions.AccountService/mp-rest/url", wireMockServer.baseUrl());
   }
