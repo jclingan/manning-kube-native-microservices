@@ -24,6 +24,7 @@ public class WiremockAccountService implements QuarkusTestResourceLifecycleManag
 
     stubFor(post(urlEqualTo("/accounts/121212/transaction"))
         .willReturn(aResponse()
+            //noContent() needed to be changed once the external service returned a Map
             .withHeader("Content-Type", "application/json")
             .withStatus(200)
             .withBody("{}")

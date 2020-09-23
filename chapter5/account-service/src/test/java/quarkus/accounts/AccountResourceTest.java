@@ -52,7 +52,8 @@ public class AccountResourceTest {
         .body(withdrawalAmt)
         .when().post("/accounts/{accountNumber}/transaction", 444666)
         .then()
-        .statusCode(204);
+        // Changed from 204 to 200 when method changed to return a Map
+        .statusCode(200);
 
     balance =
         given()
@@ -86,7 +87,8 @@ public class AccountResourceTest {
         .body(depositAmt)
         .when().post("/accounts/{accountNumber}/transaction", 444666)
         .then()
-        .statusCode(204);
+        // Changed from 204 to 200 when method changed to return a Map
+        .statusCode(200);
 
     balance =
         given()
