@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
 
 @Path("/transactions")
 @ApplicationScoped
@@ -55,6 +56,8 @@ public class TransactionResource {
     AccountServiceProgrammatic acctService =
         RestClientBuilder.newBuilder()
             .baseUrl(new URL(accountServiceUrl))
+            .connectTimeout(500, TimeUnit.MILLISECONDS)
+            .readTimeout(1200, TimeUnit.MILLISECONDS)
             .build(AccountServiceProgrammatic.class);
 
     acctService.transact(accountNumber, amount);
