@@ -8,7 +8,7 @@ import io.smallrye.reactive.messaging.connectors.InMemorySink;
 import io.smallrye.reactive.messaging.connectors.InMemorySource;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.junit.jupiter.api.Test;
-import quarkus.overdraft.events.OverdraftFee;
+import quarkus.overdraft.events.AccountFee;
 import quarkus.overdraft.events.OverdraftLimitUpdate;
 import quarkus.overdraft.events.Overdrawn;
 
@@ -34,17 +34,17 @@ public class OverdraftResourceEventsTest {
   @Test
   void testOverdraftEvent() {
     InMemorySource<Overdrawn> overdrawnSource = connector.source("account-overdrawn");
-    InMemorySink<OverdraftFee> overdraftSink = connector.sink("overdraft-fee");
+    InMemorySink<AccountFee> overdraftSink = connector.sink("overdraft-fee");
 
     Overdrawn overdrawn = new Overdrawn(121212L, 212121L, new BigDecimal("-185.00"), new BigDecimal("-200.00"));
     overdrawnSource.send(overdrawn);
 
     await().atMost(3, TimeUnit.SECONDS).until(() -> overdraftSink.received().size() == 1);
 
-    Message<OverdraftFee> overdraftFeeMessage = overdraftSink.received().get(0);
+    Message<AccountFee> overdraftFeeMessage = overdraftSink.received().get(0);
     assertThat(overdraftFeeMessage, notNullValue());
 
-    OverdraftFee feePayload = overdraftFeeMessage.getPayload();
+    AccountFee feePayload = overdraftFeeMessage.getPayload();
     assertThat(feePayload, notNullValue());
     assertThat(feePayload.accountNumber, equalTo(121212L));
     assertThat(feePayload.overdraftFee, equalTo(new BigDecimal("15.00")));
@@ -91,7 +91,7 @@ public class OverdraftResourceEventsTest {
 
   @Test
   void testUpdateOverdraftEvent() {
-    InMemorySink<OverdraftLimitUpdate> limitUpdateSink = connector.sink("update-overdraft");
+    InMemorySink<OverdraftLimitUpdate> limitUpdateSink = connector.sink("overdraft-update");
 
     given()
         .contentType(ContentType.JSON)

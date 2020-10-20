@@ -58,7 +58,7 @@ public class OverdraftResource {
     }
 
     @Inject
-    @Channel("update-overdraft")
+    @Channel("overdraft-update")
     Emitter<OverdraftLimitUpdate> emitter;
 
     @PUT

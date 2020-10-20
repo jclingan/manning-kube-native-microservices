@@ -11,7 +11,7 @@ public class InMemoryLifecycleManager implements QuarkusTestResourceLifecycleMan
   public Map<String, String> start() {
     Map<String, String> env = new HashMap<>();
     env.putAll(InMemoryConnector.switchIncomingChannelsToInMemory("account-overdrawn"));
-    env.putAll(InMemoryConnector.switchOutgoingChannelsToInMemory("update-overdraft"));
+    env.putAll(InMemoryConnector.switchOutgoingChannelsToInMemory("overdraft-update"));
     env.putAll(InMemoryConnector.switchOutgoingChannelsToInMemory("overdraft-fee"));
     return env;
   }
