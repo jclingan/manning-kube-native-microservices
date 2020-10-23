@@ -1,0 +1,29 @@
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: overdrawn
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  partitions: 5
+  replicas: 2
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: new-limit
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  partitions: 5
+  replicas: 2
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: account-fee
+  labels:
+    strimzi.io/cluster: my-cluster
+spec:
+  partitions: 5
+  replicas: 2

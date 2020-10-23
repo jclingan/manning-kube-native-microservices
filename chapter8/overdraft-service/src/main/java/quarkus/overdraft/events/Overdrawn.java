@@ -8,6 +8,9 @@ public class Overdrawn {
   public BigDecimal balance;
   public BigDecimal overdraftLimit;
 
+  public Overdrawn() {
+  }
+
   public Overdrawn(Long accountNumber, Long customerNumber, BigDecimal balance, BigDecimal overdraftLimit) {
     this.accountNumber = accountNumber;
     this.customerNumber = customerNumber;
