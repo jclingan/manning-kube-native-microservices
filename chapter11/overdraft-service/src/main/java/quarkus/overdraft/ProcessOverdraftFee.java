@@ -15,7 +15,7 @@ import java.math.RoundingMode;
 public class ProcessOverdraftFee {
   @Incoming("customer-overdrafts")
   @Outgoing("overdraft-fee")
-  public AccountFee processOverdraftFee(Message<Overdrawn> message) {
+  public Message<AccountFee> processOverdraftFee(Message<Overdrawn> message) {
     Overdrawn payload = message.getPayload();
     CustomerOverdraft customerOverdraft = message.getMetadata(CustomerOverdraft.class).get();
 
@@ -23,7 +23,7 @@ public class ProcessOverdraftFee {
     feeEvent.accountNumber = payload.accountNumber;
     feeEvent.overdraftFee = determineFee(payload.overdraftLimit, customerOverdraft.totalOverdrawnEvents,
         customerOverdraft.accountOverdrafts.get(payload.accountNumber).numberOverdrawnEvents);
-    return feeEvent;
+    return message.withPayload(feeEvent);
   }
 
   private BigDecimal determineFee(BigDecimal overdraftLimit, int customerOverdrawnTimes,

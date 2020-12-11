@@ -1,10 +1,13 @@
 package quarkus.accounts;
 
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
+import io.opentracing.propagation.TextMap;
 import io.smallrye.reactive.messaging.annotations.Blocking;
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.eclipse.microprofile.reactive.messaging.Emitter;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.eclipse.microprofile.reactive.messaging.Message;
+import io.smallrye.reactive.messaging.kafka.OutgoingKafkaRecordMetadata;
+import org.apache.kafka.common.header.internals.RecordHeaders;
+import org.eclipse.microprofile.opentracing.Traced;
+import org.eclipse.microprofile.reactive.messaging.*;
 import quarkus.accounts.events.OverdraftLimitUpdate;
 import quarkus.accounts.events.Overdrawn;
 
@@ -19,9 +22,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 @Path("/accounts")
 @ApplicationScoped
@@ -64,9 +66,13 @@ public class AccountResource {
   int ackedMessages = 0;
   List<Throwable> failures = new ArrayList<>();
 
+  @Inject
+  Tracer tracer;
+
   @PUT
   @Path("{accountNumber}/withdrawal")
   @Transactional
+  @Traced(operationName = "withdraw-from-account")
   public Account withdrawal(@PathParam("accountNumber") Long accountNumber, String amount) {
     Account entity = Account.findByAccountNumber(accountNumber);
 
@@ -83,21 +89,26 @@ public class AccountResource {
     if (entity.balance.compareTo(BigDecimal.ZERO) < 0) {
       entity.markOverdrawn();
       Overdrawn payload = new Overdrawn(entity.accountNumber, entity.customerNumber, entity.balance, entity.overdraftLimit);
-      emitter.send(payload);
+      RecordHeaders headers = new RecordHeaders();
+      tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, new TextMap() {
+        @Override
+        public Iterator<Map.Entry<String, String>> iterator() {
+          throw new UnsupportedOperationException("This should only be used with Tracer.inject()");
+        }
 
-      /* Alternative using ack and nack handlers
-      emitter.send(Message.of(payload,
-          () -> {
-            ackedMessages++;
-            return CompletableFuture.completedFuture(null);
-          },
-          reason -> {
-            failures.add(reason);
-            return CompletableFuture.completedFuture(null);
-          })
-      );
-      */
+        @Override
+        public void put(String key, String value) {
+          headers.add(key, value.getBytes(StandardCharsets.UTF_8));
+        }
+      });
+      OutgoingKafkaRecordMetadata<Object> kafkaMetadata = OutgoingKafkaRecordMetadata.builder()
+          .withHeaders(headers)
+          .build();
+      emitter.send(Message.of(payload, Metadata.of(kafkaMetadata)));
     }
+
+    tracer.activeSpan().setTag("accountNumber", accountNumber);
+    tracer.activeSpan().setBaggageItem("withdrawalAmount", amount);
 
     return entity;
   }
@@ -121,6 +132,9 @@ public class AccountResource {
     }
 
     entity.addFunds(new BigDecimal(amount));
+    if (entity.balance.compareTo(BigDecimal.ZERO) > 0) {
+      entity.accountStatus = AccountStatus.OPEN;
+    }
     return entity;
   }
 
