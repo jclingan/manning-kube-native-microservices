@@ -1,6 +1,7 @@
 package quarkus.accounts;
 
 import io.opentracing.Tracer;
+import io.opentracing.contrib.kafka.TracingKafkaUtils;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
 import io.smallrye.reactive.messaging.annotations.Blocking;
@@ -90,17 +91,7 @@ public class AccountResource {
       entity.markOverdrawn();
       Overdrawn payload = new Overdrawn(entity.accountNumber, entity.customerNumber, entity.balance, entity.overdraftLimit);
       RecordHeaders headers = new RecordHeaders();
-      tracer.inject(tracer.activeSpan().context(), Format.Builtin.TEXT_MAP, new TextMap() {
-        @Override
-        public Iterator<Map.Entry<String, String>> iterator() {
-          throw new UnsupportedOperationException("This should only be used with Tracer.inject()");
-        }
-
-        @Override
-        public void put(String key, String value) {
-          headers.add(key, value.getBytes(StandardCharsets.UTF_8));
-        }
-      });
+      TracingKafkaUtils.inject(tracer.activeSpan().context(), headers, tracer);
       OutgoingKafkaRecordMetadata<Object> kafkaMetadata = OutgoingKafkaRecordMetadata.builder()
           .withHeaders(headers)
           .build();

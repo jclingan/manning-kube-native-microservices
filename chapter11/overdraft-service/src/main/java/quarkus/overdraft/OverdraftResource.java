@@ -3,6 +3,7 @@ package quarkus.overdraft;
 import io.opentracing.Scope;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
+import io.opentracing.contrib.kafka.TracingKafkaUtils;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
 import io.smallrye.reactive.messaging.kafka.IncomingKafkaRecordMetadata;
@@ -57,41 +58,13 @@ public class OverdraftResource {
         accountOverdraft.currentOverdraft = overdrawnPayload.overdraftLimit;
         accountOverdraft.numberOverdrawnEvents++;
 
-        SpanContext parentSpan = tracer.extract(Format.Builtin.TEXT_MAP, new TextMap() {
-            @Override
-            public Iterator<Map.Entry<String, String>> iterator() {
-                Optional<IncomingKafkaRecordMetadata> metadata = message.getMetadata(IncomingKafkaRecordMetadata.class);
-                if (metadata.isPresent()) {
-                    Map<String, String> map = new HashMap<>();
-                    for (Header header : metadata.get().getHeaders()) {
-                        map.put(header.key(), header.value() == null ? null : new String(header.value(), StandardCharsets.UTF_8));
-                    }
-                    return map.entrySet().iterator();
-                }
-                return Collections.EMPTY_SET.iterator();
-            }
-
-            @Override
-            public void put(String key, String value) {
-                throw new UnsupportedOperationException("This should only be used with Tracer.extract()");
-            }
-        });
-
         RecordHeaders headers = new RecordHeaders();
-        try (Scope scope = tracer.buildSpan("process-overdraft-fee")
-                .asChildOf(parentSpan)
+        if (message.getMetadata(IncomingKafkaRecordMetadata.class).isPresent()) {
+            try (final Scope scope = tracer.buildSpan("process-overdraft-fee")
+                .asChildOf(TracingKafkaUtils.extractSpanContext(message.getMetadata(IncomingKafkaRecordMetadata.class).get().getHeaders(), tracer))
                 .startActive(true)) {
-            tracer.inject(scope.span().context(), Format.Builtin.TEXT_MAP, new TextMap() {
-                @Override
-                public Iterator<Map.Entry<String, String>> iterator() {
-                    throw new UnsupportedOperationException("This should only be used with Tracer.inject()");
-                }
-
-                @Override
-                public void put(String key, String value) {
-                    headers.add(key, value.getBytes(StandardCharsets.UTF_8));
-                }
-            });
+                TracingKafkaUtils.inject(scope.span().context(), headers, tracer);
+            }
         }
         OutgoingKafkaRecordMetadata<Object> kafkaMetadata = OutgoingKafkaRecordMetadata.builder()
             .withHeaders(headers)
