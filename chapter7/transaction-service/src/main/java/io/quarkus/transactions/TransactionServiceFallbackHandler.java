@@ -4,12 +4,14 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.microprofile.faulttolerance.ExecutionContext;
 import org.eclipse.microprofile.faulttolerance.FallbackHandler;
+import org.jboss.logging.Logger;
 
-public class TransactionFallbackHandler
+public class TransactionServiceFallbackHandler
        implements FallbackHandler<Response> {                           // <1>
 
     @Override
     public Response handle(ExecutionContext context) {                  // <2>
+        Logger LOG = Logger.getLogger(TransactionServiceFallbackHandler.class);
 
         Response response;
         String name;
@@ -39,6 +41,7 @@ public class TransactionFallbackHandler
                            .build();
                 break;
 
+            case "WebApplicationException":
             case "HttpHostConnectException":
                 response = Response
                            .status(Response.Status.BAD_GATEWAY)         // <7>
@@ -52,12 +55,11 @@ public class TransactionFallbackHandler
 
         }
 
-        System.out.println("******** "
+        LOG.info("******** "
              +  context.getMethod().getName()
              + ": " + name
              + " ********");
 
         return response;
     }
-
 }

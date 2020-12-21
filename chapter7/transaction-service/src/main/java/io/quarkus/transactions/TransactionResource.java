@@ -66,16 +66,16 @@ public class TransactionResource {
   }
 
   @POST
-  @Bulkhead(1) // <1>
-  @CircuitBreaker(
-    requestVolumeThreshold=3,                                           // <1>
-    failureRatio=.66,                                                   // <2>
-    delay = 5,                                                          // <3>
-    delayUnit = ChronoUnit.SECONDS,                                     // <4>
-    successThreshold=2                                                  // <5>
-  )
-  @Fallback(value = TransactionFallbackHandler.class)
   @Path("/api/{acctNumber}")
+  @Bulkhead(1)
+  @CircuitBreaker(
+    requestVolumeThreshold=3,
+    failureRatio=.66,
+    delay = 1,
+    delayUnit = ChronoUnit.SECONDS,
+    successThreshold=2
+  )
+  @Fallback(value = TransactionServiceFallbackHandler.class)
   public Response newTransactionWithApi(@PathParam("acctNumber") Long accountNumber, BigDecimal amount)
       throws MalformedURLException {
     AccountServiceProgrammatic acctService = RestClientBuilder.newBuilder().baseUrl(new URL(accountServiceUrl))
@@ -84,6 +84,10 @@ public class TransactionResource {
 
     acctService.transact(accountNumber, amount);
     return Response.ok().build();
+  }
+
+  public Response bulkheadFallbackGetBalance(Long accountNumber, BigDecimal amount) {
+    return Response.status(Response.Status.TOO_MANY_REQUESTS).build();
   }
 
   @POST
@@ -97,24 +101,19 @@ public class TransactionResource {
   }
 
   @GET
-  @Path("/timeout/{acctnumber}/balance")
-  @Timeout(100) // <1>
-  @Retry(delay = 100,                                                // (1)
-         jitter = 25,                                              // (2)
-         maxRetries = 3,                                           // (3)
-         retryOn = TimeoutException.class)                         
-  @Fallback(value = TransactionFallbackHandler.class)                      // <7>
-
+  @Path("/{acctnumber}/balance")
+  @Timeout(100)
+  @Retry(delay = 100,
+         jitter = 25,
+         maxRetries = 3,
+         retryOn = TimeoutException.class)
+  @Fallback(value = TransactionServiceFallbackHandler.class)
   @Produces(MediaType.APPLICATION_JSON)
   public Response getBalance( // <3>
       @PathParam("acctnumber") Long accountNumber) {
     String balance = accountService.getBalance(accountNumber).toString();
 
     return Response.ok(balance).build();
-  }
-
-  public Response bulkheadFallbackGetBalance(Long accountNumber, BigDecimal amount) { // <3>
-    return Response.status(Response.Status.TOO_MANY_REQUESTS).build(); // <4>
   }
 
   public Response timeoutFallbackGetBalance(Long accountNumber) {

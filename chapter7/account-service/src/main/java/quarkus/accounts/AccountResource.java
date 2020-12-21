@@ -32,20 +32,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @Consumes(MediaType.APPLICATION_JSON)
 public class AccountResource {
 
-  @ConfigProperty(name = "ft.delay", defaultValue = "200") // <1>
-  int delay;
-
-  void doDelay() {
-    int delayTime;
-    try {
-      delayTime = new Random().nextInt(delay); // <2>
-      System.out.println("** Waiting " + delayTime + "ms **");
-      TimeUnit.MILLISECONDS.sleep(delayTime); // <3>
-    } catch (InterruptedException e) {
-      // e.printStackTrace();
-    }
-  }
-
   @GET
   @Path("/{acctNumber}/balance")
   public BigDecimal getBalance(@PathParam("acctNumber") Long accountNumber) {
@@ -54,8 +40,6 @@ public class AccountResource {
     if (account == null) {
       throw new WebApplicationException("Account with " + accountNumber + " does not exist.", 404);
     }
-
-    doDelay();                     // <1>
 
     return account.balance;
   }
@@ -74,8 +58,6 @@ public class AccountResource {
     if (entity.accountStatus.equals(AccountStatus.OVERDRAWN)) {
       throw new WebApplicationException("Account is overdrawn, no further withdrawals permitted", 409);
     }
-
-    doDelay();    // <1>
 
     entity.balance = entity.balance.add(amount);
     return headers.getRequestHeaders();
