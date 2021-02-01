@@ -11,11 +11,13 @@ import javax.json.JsonObjectBuilder;
 import javax.transaction.Transactional;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +25,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping(path = "/accounts",
+                produces=MediaType.APPLICATION_JSON_VALUE,
+                consumes=MediaType.APPLICATION_JSON_VALUE)
 public class AccountResource {
 
   AccountRepository repository;
@@ -53,7 +57,7 @@ public class AccountResource {
   @Transactional
   public Map<String, List<String>> transact(@RequestHeader("Accept") String acceptHeader,
         @PathVariable("acctNumber") Long accountNumber,
-         BigDecimal amount) {
+        @RequestBody BigDecimal amount) {
     Account entity = repository.findByAccountNumber(accountNumber);
 
     if (entity == null) {

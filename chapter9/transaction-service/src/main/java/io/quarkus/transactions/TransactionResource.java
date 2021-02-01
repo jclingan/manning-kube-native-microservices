@@ -22,15 +22,19 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping(path = "/transactions",
+                produces=MediaType.APPLICATION_JSON_VALUE,
+                consumes=MediaType.APPLICATION_JSON_VALUE)
 public class TransactionResource {
   @Autowired
   @RestClient
@@ -40,7 +44,7 @@ public class TransactionResource {
   String accountServiceUrl;
 
   @PostMapping("/{acctNumber}")
-  public Map<String, List<String>> newTransaction(@PathVariable("acctNumber") Long accountNumber, BigDecimal amount) {
+  public Map<String, List<String>> newTransaction(@PathVariable("acctNumber") Long accountNumber, @RequestBody BigDecimal amount) {
     try {
       return accountService.transact(accountNumber, amount);
     } catch (Throwable t) {
@@ -53,7 +57,7 @@ public class TransactionResource {
 
   @PostMapping("/async/{acctNumber}")
   public CompletionStage<Map<String, List<String>>> newTransactionAsync(@PathVariable("acctNumber") Long accountNumber,
-      BigDecimal amount) {
+      @RequestBody BigDecimal amount) {
     return accountService.transactAsync(accountNumber, amount);
   }
 
@@ -68,7 +72,7 @@ public class TransactionResource {
     successThreshold=2
   )
   @Fallback(value = TransactionServiceFallbackHandler.class)
-  public ResponseEntity<String> newTransactionWithApi(@PathVariable("acctNumber") Long accountNumber, BigDecimal amount)
+  public ResponseEntity<String> newTransactionWithApi(@PathVariable("acctNumber") Long accountNumber, @RequestBody BigDecimal amount)
       throws MalformedURLException {
     AccountServiceProgrammatic acctService = RestClientBuilder.newBuilder().baseUrl(new URL(accountServiceUrl))
         .connectTimeout(500, TimeUnit.MILLISECONDS).readTimeout(1200, TimeUnit.MILLISECONDS)
@@ -84,7 +88,7 @@ public class TransactionResource {
 
   @PostMapping("/api/async/{accountNumber}")
   public CompletionStage<Void> newTransactionWithApiAsync(@PathVariable("acctNumber") Long accountNumber,
-      BigDecimal amount) throws MalformedURLException {
+      @RequestBody BigDecimal amount) throws MalformedURLException {
     AccountServiceProgrammatic acctService = RestClientBuilder.newBuilder().baseUrl(new URL(accountServiceUrl))
         .build(AccountServiceProgrammatic.class);
 

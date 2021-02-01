@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/bank")
+@RequestMapping(path = "/bank",
+                produces=MediaType.APPLICATION_JSON_VALUE,
+                consumes=MediaType.APPLICATION_JSON_VALUE)
 public class BankResource {
     @Value("${bank.name:Bank of Default}")
     String name;
