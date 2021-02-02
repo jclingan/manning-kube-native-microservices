@@ -42,9 +42,7 @@ mvn clean package -Dquarkus.kubernetes.deploy=true
 [source,shell script]
 .Get endpoint
 ----
-export PORT=`kubectl get svc bank-service -o jsonpath="{.spec.ports[0].nodePort }"`
-export IP=`minikube ip`
-export BASE_URL=http://$IP:$PORT/bank
+export BASE_URL=`minikube service bank-service --url`/bank
 ----
 
 [source,shell script]
