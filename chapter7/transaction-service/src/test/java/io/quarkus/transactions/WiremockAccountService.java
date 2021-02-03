@@ -46,7 +46,7 @@ public class WiremockAccountService implements QuarkusTestResourceLifecycleManag
 
   protected void mockTimeout() {
     stubFor(get(urlEqualTo("/accounts/123456/balance"))
-        .willReturn(aResponse().withHeader("Content-Type", "application/json").withStatus(504).withFixedDelay(200).withBody("435.76")));
+        .willReturn(aResponse().withHeader("Content-Type", "application/json").withStatus(200).withFixedDelay(200).withBody("435.76")));
 
     stubFor(get(urlEqualTo("/accounts/456789/balance"))
         .willReturn(aResponse().withHeader("Content-Type", "application/json").withStatus(200).withBody("435.76")));
