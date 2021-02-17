@@ -11,13 +11,13 @@ import javax.persistence.Id;
 public class Account {
   @Id
   @GeneratedValue
-  Long id;
+  private Long id;
 
-  Long accountNumber;
-  Long customerNumber;
-  String customerName;
-  BigDecimal balance;
-  AccountStatus accountStatus = AccountStatus.OPEN;
+  private Long accountNumber;
+  private Long customerNumber;
+  private String customerName;
+  private BigDecimal balance;
+  private AccountStatus accountStatus = AccountStatus.OPEN;
 
   @Override
   public boolean equals(Object o) {

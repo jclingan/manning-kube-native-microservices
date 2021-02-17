@@ -64,7 +64,7 @@ public class AccountResource {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account with " + accountNumber + " does not exist.");
     }
 
-    if (entity.accountStatus.equals(AccountStatus.OVERDRAWN)) {
+    if (entity.getAccountStatus().equals(AccountStatus.OVERDRAWN)) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Account is overdrawn, no further withdrawals permitted");
     }
 
