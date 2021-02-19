@@ -82,7 +82,7 @@ public class AccountResource {
 
   @RestControllerAdvice
   public static class ErrorMapper {
-    @ExceptionHandler(value = {Exception.class})
+    @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> toResponse(Exception exception) {
 
       HttpStatus code = HttpStatus.INTERNAL_SERVER_ERROR;
