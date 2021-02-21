@@ -33,9 +33,9 @@ public class AccountResource {
   }
 
   @GET
-  @Path("/{id}")
+  @Path("/{accountId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Account getAccount(@PathParam("id") Long accountId) {
+  public Account getAccount(@PathParam("accountId") Long accountId) {
     Account response = null;
     for (Account acct : accounts) {
       if (acct.getAccountNumber().equals(accountId)) {

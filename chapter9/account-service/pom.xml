@@ -13,7 +13,7 @@
       <dependency>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-universe-bom</artifactId>
-        <version>1.10.5.Final</version>
+        <version>1.11.3.Final</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
