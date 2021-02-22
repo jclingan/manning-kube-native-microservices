@@ -47,7 +47,7 @@ spec:
         livenessProbe:
           failureThreshold: 3
           httpGet:
-            path: /health/live
+            path: /q/health/live
             port: 18888
             scheme: HTTP
           initialDelaySeconds: 10
@@ -62,7 +62,7 @@ spec:
         readinessProbe:
           failureThreshold: 3
           httpGet:
-            path: /health/ready
+            path: /q/health/ready
             port: 18888
             scheme: HTTP
           initialDelaySeconds: 10
