@@ -3,8 +3,6 @@ package quarkus.accounts;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.json.Json;
@@ -23,8 +21,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @Path("/accounts")
 @ApplicationScoped

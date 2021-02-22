@@ -4,7 +4,6 @@ import io.smallrye.reactive.messaging.annotations.Blocking;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.eclipse.microprofile.reactive.messaging.Message;
 import quarkus.accounts.events.OverdraftLimitUpdate;
 import quarkus.accounts.events.Overdrawn;
 
@@ -21,7 +20,6 @@ import javax.ws.rs.ext.Provider;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Path("/accounts")
 @ApplicationScoped
