@@ -33,19 +33,19 @@ public class AccountResource {
   }
 
   @GET
-  @Path("/{accountId}")
+  @Path("/{accountNumber}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Account getAccount(@PathParam("accountId") Long accountId) {
+  public Account getAccount(@PathParam("accountNumber") Long accountNumber) {
     Account response = null;
     for (Account acct : accounts) {
-      if (acct.getAccountNumber().equals(accountId)) {
+      if (acct.getAccountNumber().equals(accountNumber)) {
         response = acct;
         break;
       }
     }
 
     if (response == null) {
-      throw new WebApplicationException("Account with id of " + accountId + " does not exist.", 404);
+      throw new WebApplicationException("Account with id of " + accountNumber + " does not exist.", 404);
     }
 
     return response;
@@ -64,20 +64,25 @@ public class AccountResource {
   }
 
   @PUT
-  @Path("{id}")
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  public Account updateAccount(@PathParam("id") Long accountId, Account account) {
-    Account oldAccount = getAccount(accountId);
-    accounts.remove(oldAccount);
-    accounts.add(account);
+  @Path("{accountNumber}/withdrawal")
+  public Account withdrawal(@PathParam("accountNumber") Long accountNumber, String amount) {
+    Account account = getAccount(accountNumber);
+    account.withdrawFunds(new BigDecimal(amount));
+    return account;
+  }
+
+  @PUT
+  @Path("{accountNumber}/deposit")
+  public Account deposit(@PathParam("accountNumber") Long accountNumber, String amount) {
+    Account account = getAccount(accountNumber);
+    account.addFunds(new BigDecimal(amount));
     return account;
   }
 
   @DELETE
-  @Path("{id}")
-  public Response deleteAccount(@PathParam("id") Long accountId) {
-    Account oldAccount = getAccount(accountId);
+  @Path("{accountNumber}")
+  public Response closeAccount(@PathParam("accountNumber") Long accountNumber) {
+    Account oldAccount = getAccount(accountNumber);
     accounts.remove(oldAccount);
     return Response.noContent().build();
   }
