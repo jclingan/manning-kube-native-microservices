@@ -1,13 +1,22 @@
 package quarkus.accounts;
 
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+
 import java.math.BigDecimal;
 import java.util.Objects;
 
+@Schema(name = "Account", description = "POJO representing an account.", type = SchemaType.OBJECT)
 public class Account {
+  @Schema(required = true, example = "123456789", minLength = 8, type = SchemaType.INTEGER)
   public Long accountNumber;
+  @Schema(required = true, example = "432542374", minLength = 6, type = SchemaType.INTEGER)
   public Long customerNumber;
+  @Schema(example = "Steve Hanger", type = SchemaType.STRING)
   public String customerName;
+  @Schema(required = true, example = "438.32")
   public BigDecimal balance;
+  @Schema(required = true, example = "OPEN")
   public AccountStatus accountStatus = AccountStatus.OPEN;
 
   public Account() {
@@ -53,7 +62,7 @@ public class Account {
     return customerName;
   }
 
-  public AccountStatus getStatus() {
+  public AccountStatus getAccountStatus() {
     return accountStatus;
   }
 
