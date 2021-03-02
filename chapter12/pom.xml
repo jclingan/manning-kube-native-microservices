@@ -9,5 +9,6 @@
 
   <modules>
     <module>account-service-annotations</module>
+    <module>account-service-external-openapi</module>
   </modules>
 </project>
