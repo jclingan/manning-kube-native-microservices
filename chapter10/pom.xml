@@ -3,21 +3,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>quarkus</groupId>
-  <artifactId>book-examples-parent</artifactId>
+  <artifactId>chapter10-parent</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <modules>
-    <module>chapter2</module>
-    <module>chapter3/bank-service</module>
-    <module>chapter4</module>
-    <module>chapter5</module>
-    <module>chapter6</module>
-    <module>chapter7</module>
-    <module>chapter8</module>
-    <module>chapter9</module>
-    <module>chapter10</module>
-    <module>chapter11</module>
-    <module>chapter12</module>
+    <module>micrometer-account-service</module>
   </modules>
 </project>
