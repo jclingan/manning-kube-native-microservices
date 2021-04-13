@@ -113,6 +113,7 @@ public class AccountResourceTest {
 
     Account result =
         given()
+            .contentType(ContentType.JSON)
             .body("56.21")
             .when().put("/accounts/{accountNumber}/withdrawal", 545454545)
             .then()
@@ -144,6 +145,7 @@ public class AccountResourceTest {
 
     Account result =
         given()
+            .contentType(ContentType.JSON)
             .body("28.42")
             .when().put("/accounts/{accountNumber}/deposit", 123456789)
             .then()
