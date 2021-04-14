@@ -41,6 +41,7 @@ public class TransactionServiceFallbackHandler
                            .build();
                 break;
 
+            case "ResteasyWebApplicationException":
             case "WebApplicationException":
             case "HttpHostConnectException":
                 response = Response
