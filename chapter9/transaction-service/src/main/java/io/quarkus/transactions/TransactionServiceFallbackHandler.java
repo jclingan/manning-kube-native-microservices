@@ -37,6 +37,7 @@ public class TransactionServiceFallbackHandler
                 response = new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
                 break;
 
+            case "ResteasyWebApplicationException":
             case "WebApplicationException":
             case "HttpHostConnectException":
                 response = new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
