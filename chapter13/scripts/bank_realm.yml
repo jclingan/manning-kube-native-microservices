@@ -1,0 +1,26 @@
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakRealm
+metadata:
+  name: bank
+  labels:
+    realm: bank
+spec:
+  realm:
+    realm: "bank"
+    enabled: True
+    displayName: "Bank Realm"
+    frontendUrl: "http://keycloak.local/auth"
+    roles:
+      realm:
+        - name: "customer"
+          composite: false
+          clientRole: false
+        - name: "teller"
+          composite: false
+          clientRole: false
+        - name: "bankadmin"
+          composite: false
+          clientRole: false
+  instanceSelector:
+    matchLabels:
+      app: bank-keycloak

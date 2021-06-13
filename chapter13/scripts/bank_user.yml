@@ -1,0 +1,93 @@
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakUser
+metadata:
+  name: customer
+  labels:
+    app: bank
+spec:
+  user:
+    username: "duke"
+    firstName: "Duke"
+    lastName: "Customer"
+    enabled: True
+    emailVerified: True
+    email: "duke@acme2.com"
+    realmRoles:
+      - "customer"
+    credentials:
+      - type: "password"
+        value: "duke"
+    attributes:
+      phone:
+        - "555-555-5555"
+      birthdate:
+        - "February 30, 2000"
+  realmSelector:
+    matchLabels:
+      realm: bank
+---
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakUser
+metadata:
+  name: teller
+  labels:
+    app: bank
+spec:
+  user:
+    username: "quarkus"
+    firstName: "Quarkus"
+    lastName: "Teller"
+    enabled: True
+    emailVerified: True
+    realmRoles:
+      - "customer"
+    credentials:
+      - type: "password"
+        value: "quarkus"
+  realmSelector:
+    matchLabels:
+      realm: bank
+---
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakUser
+metadata:
+  name: admin
+  labels:
+    app: bank
+spec:
+  user:
+    username: "admin"
+    firstName: "Bank"
+    lastName: "Administrator"
+    enabled: True
+    emailVerified: True
+    realmRoles:
+      - "bankadmin"
+    credentials:
+      - type: "password"
+        value: "admin"
+  realmSelector:
+    matchLabels:
+      realm: bank
+---
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakUser
+metadata:
+  name: jwt
+  labels:
+    app: bank
+spec:
+  user:
+    username: "jwt"
+    firstName: "JWT"
+    lastName: "Token"
+    enabled: True
+    emailVerified: True
+    realmRoles:
+      - "customer"
+    credentials:
+      - type: "password"
+        value: "jwt"
+  realmSelector:
+    matchLabels:
+      realm: bank

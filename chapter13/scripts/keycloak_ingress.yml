@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: keycloak
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  rules:
+  - host: keycloak.local
+    http:
+      paths:
+      - backend:
+          serviceName: keycloak
+          servicePort: 8443

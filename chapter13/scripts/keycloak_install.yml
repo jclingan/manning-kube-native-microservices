@@ -1,0 +1,23 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: keycloak-postgresql-volume
+  labels:
+    app: keycloak
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 500Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data"
+---
+apiVersion: keycloak.org/v1alpha1
+kind: Keycloak
+metadata:
+  name: bank-keycloak
+  labels:
+    app: bank-keycloak
+spec:
+  instances: 1

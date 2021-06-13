@@ -1,0 +1,60 @@
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakClient
+metadata:
+  name: bank
+  labels:
+    client: bank
+spec:
+  realmSelector:
+    matchLabels:
+      realm: bank
+  client:
+    clientId: "bank"
+    enabled: True
+    notBefore: 0
+    bearerOnly: false
+    consentRequired: false
+    standardFlowEnabled: True
+    implicitFlowEnabled: False
+    surrogateAuthRequired: False
+    directAccessGrantsEnabled: True
+    serviceAccountsEnabled: False
+    publicClient: True
+    protocol: "openid-connect"
+    clientAuthenticatorType: "client-secret"
+    redirectUris:
+      - "http://localhost:8081/*"
+      - "http://127.0.0.1:8081/*"
+      - "http://localhost:8088/*"
+      - "http://127.0.0.1:8088/*"
+      - "http://localhost:8008/*"
+      - "http://127.0.0.1:8008/*"
+    webOrigins: []
+    attributes:
+      saml.assertion.signature: "False"
+      saml.force.post.binding: "False"
+      saml.multivalued.roles: "False"
+      saml.encrypt: "False"
+      oauth2.device.authorization.grant.enabled: "False"
+      backchannel.logout.revoke.offline.tokens: "False"
+      saml.server.signature: "False"
+      saml.server.signature.keyinfo.ext: "False"
+      use.refresh.tokens: "True"
+      exclude.session.state.from.auth.response: "False"
+      oidc.ciba.grant.enabled: "False"
+      saml.artifact.binding: "False"
+      backchannel.logout.session.required: "True"
+      client_credentials.use_refresh_token: "False"
+      saml_force_name_id_format: "False"
+      saml.client.signature: "False"
+      tls.client.certificate.bound.access.tokens: "False"
+      saml.authnstatement: "False"
+      display.on.consent.screen: "False"
+      saml.onetimeuse.condition: "False"
+    defaultClientScopes:
+      - "web-origins"
+      - "profile"
+      - "roles"
+      - "microprofile-jwt"
+      - "email"
+      - "phone"
