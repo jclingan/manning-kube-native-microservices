@@ -9,10 +9,10 @@ import org.jboss.logging.Logger;
 public class TransactionServiceFallbackHandler
        implements FallbackHandler<Response> {                           // <1>
 
+    Logger LOG = Logger.getLogger(TransactionServiceFallbackHandler.class);
+
     @Override
     public Response handle(ExecutionContext context) {                  // <2>
-        Logger LOG = Logger.getLogger(TransactionServiceFallbackHandler.class);
-
         Response response;
         String name;
 

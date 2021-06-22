@@ -44,28 +44,8 @@ spec:
               fieldPath: metadata.namespace
         image: quarkus-mp/spring-config-server:0.0.1-SNAPSHOT
         imagePullPolicy: IfNotPresent
-        livenessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /q/health/live
-            port: 18888
-            scheme: HTTP
-          initialDelaySeconds: 10
-          periodSeconds: 2
-          successThreshold: 1
-          timeoutSeconds: 5
         name: account-service
         ports:
         - containerPort: 18888
           name: http
           protocol: TCP
-        readinessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /q/health/ready
-            port: 18888
-            scheme: HTTP
-          initialDelaySeconds: 10
-          periodSeconds: 2
-          successThreshold: 1
-          timeoutSeconds: 5

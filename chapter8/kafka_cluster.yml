@@ -1,4 +1,4 @@
-apiVersion: kafka.strimzi.io/v1beta1
+apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
 metadata:
   name: my-cluster
@@ -7,9 +7,8 @@ spec:
     version: 2.6.0
     replicas: 2
     listeners:
-      plain: {}
-      tls: {}
-      external:
+      - name: external
+        port: 9092
         type: nodeport
         tls: false
     config:
