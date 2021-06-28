@@ -6,10 +6,10 @@ metadata:
     realm: bank
 spec:
   realm:
+    id: "bank"
     realm: "bank"
     enabled: True
     displayName: "Bank Realm"
-    frontendUrl: "http://keycloak.local/auth"
     roles:
       realm:
         - name: "customer"
