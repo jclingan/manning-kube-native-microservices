@@ -4,31 +4,28 @@ metadata:
   name: my-cluster
 spec:
   kafka:
-    version: 2.6.0
+    version: 2.7.0
     replicas: 2
     listeners:
-      - name: external
+      - name: plain
         port: 9092
-        type: nodeport
+        type: internal
         tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
     config:
       offsets.topic.replication.factor: 2
       transaction.state.log.replication.factor: 2
       transaction.state.log.min.isr: 2
-      log.message.format.version: "2.6"
+      log.message.format.version: "2.7"
     storage:
-      type: jbod
-      volumes:
-        - id: 0
-          type: persistent-claim
-          size: 100Gi
-          deleteClaim: false
+      type: ephemeral
   zookeeper:
     replicas: 2
     storage:
-      type: persistent-claim
-      size: 100Gi
-      deleteClaim: false
+      type: ephemeral
   entityOperator:
     topicOperator: {}
     userOperator: {}
