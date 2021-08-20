@@ -11,6 +11,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @Path("/accounts")
@@ -36,19 +37,15 @@ public class AccountResource {
   @Path("/{accountNumber}")
   @Produces(MediaType.APPLICATION_JSON)
   public Account getAccount(@PathParam("accountNumber") Long accountNumber) {
-    Account response = null;
-    for (Account acct : accounts) {
-      if (acct.getAccountNumber().equals(accountNumber)) {
-        response = acct;
-        break;
-      }
-    }
+    Optional<Account> response = accounts.stream()
+        .filter(acct -> acct.getAccountNumber().equals(accountNumber))
+        .findFirst();
 
-    if (response == null) {
+    if (response.isEmpty()) {
       throw new WebApplicationException("Account with id of " + accountNumber + " does not exist.", 404);
     }
 
-    return response;
+    return response.get();
   }
 
   @POST
