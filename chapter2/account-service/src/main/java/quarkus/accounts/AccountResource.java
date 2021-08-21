@@ -15,7 +15,6 @@ import java.util.Optional;
 import java.util.Set;
 
 @Path("/accounts")
-@ApplicationScoped
 public class AccountResource {
 
   Set<Account> accounts = new HashSet<>();
