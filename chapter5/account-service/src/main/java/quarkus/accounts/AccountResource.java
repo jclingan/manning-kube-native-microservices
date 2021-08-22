@@ -1,6 +1,5 @@
 package quarkus.accounts;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.transaction.Transactional;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 
 @Path("/accounts")
-@ApplicationScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AccountResource {

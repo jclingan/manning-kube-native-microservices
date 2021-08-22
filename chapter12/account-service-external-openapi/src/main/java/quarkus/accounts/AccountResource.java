@@ -3,7 +3,6 @@ package quarkus.accounts;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.*;
@@ -16,7 +15,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Path("/accounts")
-@ApplicationScoped
 public class AccountResource {
 
   Set<Account> accounts = new HashSet<>();

@@ -7,7 +7,6 @@ import org.eclipse.microprofile.reactive.messaging.Incoming;
 import quarkus.accounts.events.OverdraftLimitUpdate;
 import quarkus.accounts.events.Overdrawn;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Path("/accounts")
-@ApplicationScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AccountResource {
