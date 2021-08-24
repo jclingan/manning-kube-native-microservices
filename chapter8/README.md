@@ -38,9 +38,11 @@ Create the necessary topics:
 kubectl apply -f kafka_topics.yml -n kafka
 ```
 
+### PostgreSQL database
+
 Create PostgreSQL database:
 
-```shell
+```shell script
 kubectl apply -f postgresql_kubernetes.yml
 ```
 
@@ -61,9 +63,17 @@ mvn verify -Dquarkus.kubernetes.deploy=true
 
 Deploy the Overdraft service:
 
-```shell
+```shell script
 cd overdraft-service
 mvn verify -Dquarkus.kubernetes.deploy=true
+```
+
+### Delete deployment
+
+Delete a service for redeployment change into the directory and run:
+
+```shell script
+kubectl delete -f target/kubernetes/minikube.yml
 ```
 
 ## Use Application
