@@ -19,6 +19,8 @@ import javax.ws.rs.ext.Provider;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 @Path("/accounts")
 @Produces(MediaType.APPLICATION_JSON)
@@ -63,7 +65,7 @@ public class AccountResource {
   @PUT
   @Path("{accountNumber}/withdrawal")
   @Transactional
-  public Account withdrawal(@PathParam("accountNumber") Long accountNumber, String amount) {
+  public CompletionStage<Account> withdrawal(@PathParam("accountNumber") Long accountNumber, String amount) {
     Account entity = Account.findByAccountNumber(accountNumber);
 
     if (entity == null) {
@@ -78,24 +80,30 @@ public class AccountResource {
 
     if (entity.balance.compareTo(BigDecimal.ZERO) < 0) {
       entity.markOverdrawn();
+      entity.persist();
       Overdrawn payload = new Overdrawn(entity.accountNumber, entity.customerNumber, entity.balance, entity.overdraftLimit);
-      emitter.send(payload);
+      return emitter.send(payload).thenCompose(empty -> CompletableFuture.completedFuture(entity));
 
       /* Alternative using ack and nack handlers
+      CompletableFuture<Account> future = new CompletableFuture<>();
       emitter.send(Message.of(payload,
           () -> {
             ackedMessages++;
+            future.complete(entity);
             return CompletableFuture.completedFuture(null);
           },
           reason -> {
             failures.add(reason);
+            future.completeExceptionally(reason);
             return CompletableFuture.completedFuture(null);
           })
       );
-      */
+      return future;
+       */
     }
 
-    return entity;
+    entity.persist();
+    return CompletableFuture.completedFuture(entity);
   }
 
   @Incoming("overdraft-update")
