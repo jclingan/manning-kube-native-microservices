@@ -26,6 +26,7 @@ public class BankTest {
   @Test
   public void testGetSecrets() throws IOException {
     try (final WebClient webClient = createWebClient()) {
+      webClient.getOptions().setRedirectEnabled(true);
       HtmlPage page = webClient.getPage("http://localhost:8081/bank/secure/secrets");
 
       HtmlForm loginForm = page.getForms().get(0);

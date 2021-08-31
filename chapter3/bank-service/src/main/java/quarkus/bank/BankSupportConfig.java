@@ -1,12 +1,12 @@
 package quarkus.bank;
 
-import io.quarkus.arc.config.ConfigProperties;
+
+import org.eclipse.microprofile.config.inject.ConfigProperties;
 
 import javax.validation.constraints.Size;
 
-@ConfigProperties
+@ConfigProperties(prefix = "bank-support")
 public class BankSupportConfig {
-    @Size(min=12, max = 12)   // xxx-xxx-xxxx format
     private String phone;
 
     public String email;

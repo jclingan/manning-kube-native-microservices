@@ -22,7 +22,6 @@ public class TransactionServiceFallbackHandler
         name = "fallbackHandlerTimer",
         displayName = "Fallback Handler Timer",
         description = "Time spent handling fallbacks",
-        reusable = false,
         absolute = true,
         unit=MetricUnits.NANOSECONDS
     )

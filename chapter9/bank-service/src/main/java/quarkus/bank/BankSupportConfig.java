@@ -6,7 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties
 public class BankSupportConfig {
-    @Size(min=12, max = 12)   // xxx-xxx-xxxx format
     private String phone;
 
     public String email;
