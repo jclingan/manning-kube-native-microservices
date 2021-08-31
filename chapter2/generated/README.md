@@ -1,4 +1,4 @@
-# account-service project
+# account-service Project
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
@@ -45,14 +45,14 @@ You can then execute your native executable with: `./target/account-service-1.0.
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.html.
 
-## Related guides
+## Related Guides
 
 - RESTEasy JAX-RS ([guide](https://quarkus.io/guides/rest-json)): REST endpoint framework implementing JAX-RS and more
 
-## Provided examples
+## Provided Code
 
-### RESTEasy JAX-RS example
+### RESTEasy JAX-RS
 
-REST is easy peasy with this Hello World RESTEasy resource.
+Easily start your RESTful Web Services
 
 [Related guide section...](https://quarkus.io/guides/getting-started#the-jax-rs-resources)

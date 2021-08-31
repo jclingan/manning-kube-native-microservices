@@ -3,14 +3,13 @@ package quarkus.accounts;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.kafka.TracingKafkaUtils;
 import io.smallrye.reactive.messaging.annotations.Blocking;
-import io.smallrye.reactive.messaging.kafka.OutgoingKafkaRecordMetadata;
+import io.smallrye.reactive.messaging.kafka.api.OutgoingKafkaRecordMetadata;
 import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.eclipse.microprofile.reactive.messaging.*;
 import quarkus.accounts.events.OverdraftLimitUpdate;
 import quarkus.accounts.events.Overdrawn;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
@@ -21,10 +20,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 @Path("/accounts")
-@ApplicationScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AccountResource {
@@ -71,7 +72,7 @@ public class AccountResource {
   @Path("{accountNumber}/withdrawal")
   @Transactional
   @Traced(operationName = "withdraw-from-account")
-  public Account withdrawal(@PathParam("accountNumber") Long accountNumber, String amount) {
+  public CompletionStage<Account> withdrawal(@PathParam("accountNumber") Long accountNumber, String amount) {
     Account entity = Account.findByAccountNumber(accountNumber);
 
     if (entity == null) {
@@ -84,21 +85,35 @@ public class AccountResource {
 
     entity.withdrawFunds(new BigDecimal(amount));
 
+    tracer.activeSpan().setTag("accountNumber", accountNumber);
+    tracer.activeSpan().setBaggageItem("withdrawalAmount", amount);
+
     if (entity.balance.compareTo(BigDecimal.ZERO) < 0) {
       entity.markOverdrawn();
+      entity.persist();
       Overdrawn payload = new Overdrawn(entity.accountNumber, entity.customerNumber, entity.balance, entity.overdraftLimit);
       RecordHeaders headers = new RecordHeaders();
       TracingKafkaUtils.inject(tracer.activeSpan().context(), headers, tracer);
       OutgoingKafkaRecordMetadata<Object> kafkaMetadata = OutgoingKafkaRecordMetadata.builder()
           .withHeaders(headers)
           .build();
-      emitter.send(Message.of(payload, Metadata.of(kafkaMetadata)));
+
+      CompletableFuture<Account> future = new CompletableFuture<>();
+      emitter.send(Message.of(payload, Metadata.of(kafkaMetadata),
+          () -> {
+            future.complete(entity);
+            return CompletableFuture.completedFuture(null);
+          },
+          reason -> {
+            future.completeExceptionally(reason);
+            return CompletableFuture.completedFuture(null);
+          })
+      );
+      return future;
     }
 
-    tracer.activeSpan().setTag("accountNumber", accountNumber);
-    tracer.activeSpan().setBaggageItem("withdrawalAmount", amount);
-
-    return entity;
+    entity.persist();
+    return CompletableFuture.completedStage(entity);
   }
 
   @Incoming("overdraft-update")

@@ -11,7 +11,6 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
 import javax.json.Json;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.*;
@@ -24,7 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Path("/accounts")
-@ApplicationScoped
 @Tag(name = "transactions",
     description = "Operations manipulating account balances.")
 @Tag(name = "admin",

@@ -1,10 +1,11 @@
 package quarkus.overdraft;
 
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.kafka.TracingKafkaUtils;
-import io.smallrye.reactive.messaging.kafka.IncomingKafkaRecordMetadata;
-import io.smallrye.reactive.messaging.kafka.OutgoingKafkaRecordMetadata;
+import io.smallrye.reactive.messaging.kafka.api.IncomingKafkaRecordMetadata;
+import io.smallrye.reactive.messaging.kafka.api.OutgoingKafkaRecordMetadata;
 import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.eclipse.microprofile.reactive.messaging.*;
 import quarkus.overdraft.events.OverdraftLimitUpdate;
@@ -55,10 +56,13 @@ public class OverdraftResource {
 
         RecordHeaders headers = new RecordHeaders();
         if (message.getMetadata(IncomingKafkaRecordMetadata.class).isPresent()) {
-            try (final Scope scope = tracer.buildSpan("process-overdraft-fee")
+            Span span = tracer.buildSpan("process-overdraft-fee")
                 .asChildOf(TracingKafkaUtils.extractSpanContext(message.getMetadata(IncomingKafkaRecordMetadata.class).get().getHeaders(), tracer))
-                .startActive(true)) {
-                TracingKafkaUtils.inject(scope.span().context(), headers, tracer);
+                .start();
+            try (Scope scope = tracer.activateSpan(span)) {
+                TracingKafkaUtils.inject(span.context(), headers, tracer);
+            } finally {
+                span.finish();
             }
         }
         OutgoingKafkaRecordMetadata<Object> kafkaMetadata = OutgoingKafkaRecordMetadata.builder()
