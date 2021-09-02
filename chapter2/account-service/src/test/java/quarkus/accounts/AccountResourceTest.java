@@ -55,7 +55,7 @@ public class AccountResourceTest {
     assertThat(account.getAccountNumber(), equalTo(545454545L));
     assertThat(account.getCustomerName(), equalTo("Diana Rigg"));
     assertThat(account.getBalance(), equalTo(new BigDecimal("422.00")));
-    assertThat(account.getStatus(), equalTo(AccountStatus.OPEN));
+    assertThat(account.getAccountStatus(), equalTo(AccountStatus.OPEN));
   }
 
   @Test
@@ -109,7 +109,7 @@ public class AccountResourceTest {
     assertThat(account.getAccountNumber(), equalTo(545454545L));
     assertThat(account.getCustomerName(), equalTo("Diana Rigg"));
     assertThat(account.getBalance(), equalTo(new BigDecimal("422.00")));
-    assertThat(account.getStatus(), equalTo(AccountStatus.OPEN));
+    assertThat(account.getAccountStatus(), equalTo(AccountStatus.OPEN));
 
     Account result =
         given()
@@ -123,7 +123,7 @@ public class AccountResourceTest {
     assertThat(result.getAccountNumber(), equalTo(545454545L));
     assertThat(result.getCustomerName(), equalTo("Diana Rigg"));
     assertThat(result.getBalance(), equalTo(account.getBalance().subtract(new BigDecimal("56.21"))));
-    assertThat(result.getStatus(), equalTo(AccountStatus.OPEN));
+    assertThat(result.getAccountStatus(), equalTo(AccountStatus.OPEN));
   }
 
   @Test
@@ -140,7 +140,7 @@ public class AccountResourceTest {
     assertThat(account.getAccountNumber(), equalTo(123456789L));
     assertThat(account.getCustomerName(), equalTo("George Baird"));
     assertThat(account.getBalance(), equalTo(new BigDecimal("354.23")));
-    assertThat(account.getStatus(), equalTo(AccountStatus.OPEN));
+    assertThat(account.getAccountStatus(), equalTo(AccountStatus.OPEN));
 
     Account result =
         given()
@@ -154,6 +154,6 @@ public class AccountResourceTest {
     assertThat(result.getAccountNumber(), equalTo(123456789L));
     assertThat(result.getCustomerName(), equalTo("George Baird"));
     assertThat(result.getBalance(), equalTo(account.getBalance().add(new BigDecimal("28.42"))));
-    assertThat(result.getStatus(), equalTo(AccountStatus.OPEN));
+    assertThat(result.getAccountStatus(), equalTo(AccountStatus.OPEN));
   }
 }

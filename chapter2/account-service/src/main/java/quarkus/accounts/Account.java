@@ -53,7 +53,7 @@ public class Account {
     return customerName;
   }
 
-  public AccountStatus getStatus() {
+  public AccountStatus getAccountStatus() {
     return accountStatus;
   }
 
