@@ -40,11 +40,8 @@ public class AccountResource {
         .filter(acct -> acct.getAccountNumber().equals(accountNumber))
         .findFirst();
 
-    if (response.isEmpty()) {
-      throw new WebApplicationException("Account with id of " + accountNumber + " does not exist.", 404);
-    }
-
-    return response.get();
+    return response.orElseThrow(()
+        -> new WebApplicationException("Account with id of " + accountNumber + " does not exist.", 404));
   }
 
   @POST
